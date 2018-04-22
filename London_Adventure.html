@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+
+    <style>
+      html,
+      body {
+        font-family: Arial, sans-serif;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        height: 100%;
+        position: relative;
+      }
+
+      input {
+        font-size: 12px;
+      }
+
+      h1 {
+        color: #525454;
+        font-size: 22px;
+        margin: 0 0 10px 0;
+        text-align: center;
+      }
+      h3 {
+        color: #525454;
+        font-size: 18px;
+        margin: 0 0 10px 0;
+        text-align: left;
+      }
+      p {
+        color: #525454;
+        font-size: 12px;
+        margin: 0 0 10px 0;
+        text-align: center;
+      }
+
+      #hide-places,
+      #show-places {
+        width: 48%;
+      }
+
+      #map {
+        bottom:0px;
+        height: 100%;
+        left: 272px;
+        position: absolute;
+        right: 0px;
+      }
+
+      #pano {
+        width: 200px;
+        height: 200px;
+      }
+
+      li {
+        font-size: 12px;
+      }
+
+
+      .options-box {
+        background: #fff;
+        border: 1px solid #999;
+        border-radius: 3px;
+        height: 100%;
+        line-height: 35px;
+        padding: 10px 10px 30px 10px;
+        text-align: left;
+        width: 250px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="options-box">
+        <h1>Jeff and Josh's London Adventure</h1>
+        <hr>
+        <h3>Hotels</h3>
+        <ul>
+          <li><a href="http://www.sterminshotel.co.uk/">St Ermin&#8217s - Home Base</a></li>
+          <li><a href="http://www.sheratonparklane.com/">Sheraton Grand - Jeff&#8217s Hotel</a></li>
+          <li><a href="http://www.themayfairhotel.co.uk/">The May Fair - Patrick&#8217s Hotel</a></li>
+          <li><a href="http://www.editionhotels.com/london">The London Edition Hotel</a></li>
+        </ul>
+        <hr>
+        <h3>Sights</h3>
+        <ul>
+          <li><a href="https://www.royal.uk/royal-residences-buckingham-palace">Buckingham Palace</a></li>
+          <li><a href="http://www.westminster-abbey.org/">Westminster Abbey</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Big_Ben">Big Ben</a></li>
+          <li><a href="https://www.londoneye.com/">London Eye</a></li>
+          <li><a href="http://www.britishmuseum.org/">British Museum</a></li>
+        </ul>
+        <hr>
+        <p>Instructions: Click on the Show Places button below<br>
+        to show some suggested places to visit</p>
+        <div>
+          <input id="show-places" type="button" value="Show Places">
+          <input id="hide-places" type="button" value="Hide Places">
+        </div>
+
+      </div>
+      <div id="map"></div>
+    </div>
+    <script>
+      var map;
+
+      // Create a new blank array for all the listing markers.
+      var markers = [];
+
+      function initMap() {
+        // Create a styles array to use with the map.
+
+
+        var styles = [
+              {elementType: 'geometry', stylers: [{color: '#ebe3cd'}]},
+              {elementType: 'labels.text.fill', stylers: [{color: '#523735'}]},
+              {elementType: 'labels.text.stroke', stylers: [{color: '#f5f1e6'}]},
+              {
+                featureType: 'administrative',
+                elementType: 'geometry.stroke',
+                stylers: [{color: '#c9b2a6'}]
+              },
+              {
+                featureType: 'administrative.land_parcel',
+                elementType: 'geometry.stroke',
+                stylers: [{color: '#dcd2be'}]
+              },
+              {
+                featureType: 'administrative.land_parcel',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#ae9e90'}]
+              },
+              {
+                featureType: 'landscape.natural',
+                elementType: 'geometry',
+                stylers: [{color: '#dfd2ae'}]
+              },
+              {
+                featureType: 'poi',
+                elementType: 'geometry',
+                stylers: [{color: '#dfd2ae'}]
+              },
+              {
+                featureType: 'poi',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#93817c'}]
+              },
+              {
+                featureType: 'poi.park',
+                elementType: 'geometry.fill',
+                stylers: [{color: '#a5b076'}]
+              },
+              {
+                featureType: 'poi.park',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#447530'}]
+              },
+              {
+                featureType: 'road',
+                elementType: 'geometry',
+                stylers: [{color: '#f5f1e6'}]
+              },
+              {
+                featureType: 'road.arterial',
+                elementType: 'geometry',
+                stylers: [{color: '#fdfcf8'}]
+              },
+              {
+                featureType: 'road.highway',
+                elementType: 'geometry',
+                stylers: [{color: '#f8c967'}]
+              },
+              {
+                featureType: 'road.highway',
+                elementType: 'geometry.stroke',
+                stylers: [{color: '#e9bc62'}]
+              },
+              {
+                featureType: 'road.highway.controlled_access',
+                elementType: 'geometry',
+                stylers: [{color: '#e98d58'}]
+              },
+              {
+                featureType: 'road.highway.controlled_access',
+                elementType: 'geometry.stroke',
+                stylers: [{color: '#db8555'}]
+              },
+              {
+                featureType: 'road.local',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#806b63'}]
+              },
+              {
+                featureType: 'transit.line',
+                elementType: 'geometry',
+                stylers: [{color: '#dfd2ae'}]
+              },
+              {
+                featureType: 'transit.line',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#8f7d77'}]
+              },
+              {
+                featureType: 'transit.line',
+                elementType: 'labels.text.stroke',
+                stylers: [{color: '#ebe3cd'}]
+              },
+              {
+                featureType: 'transit.station',
+                elementType: 'geometry',
+                stylers: [{color: '#dfd2ae'}]
+              },
+              {
+                featureType: 'water',
+                elementType: 'geometry.fill',
+                stylers: [{color: '#b9d3c2'}]
+              },
+              {
+                featureType: 'water',
+                elementType: 'labels.text.fill',
+                stylers: [{color: '#92998d'}]
+              }
+        ];
+
+        // Constructor creates a new map - only center and zoom are required.
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 51.507351, lng: -0.127758},
+          zoom: 13,
+          styles: styles,
+          mapTypeControl: false
+        });
+
+        // These are the real estate listings that will be shown to the user.
+        // Normally we'd have these in a database instead.
+        var locations = [
+          {title: '<a href="http://www.sterminshotel.co.uk/">St Ermin&#8217s Hotel - Home Base</a>', location: {lat: 51.499035, lng: -0.134204}},
+          {title: '<a href="https://www.royal.uk/royal-residences-buckingham-palace">Buckingham Palace</a>', location: {lat: 51.501364, lng: -0.14189}},
+          {title: 'Sheraton Grand Park Lane Hotel - Jeff&#8217s Hotel', location: {lat: 51.504923, lng: -0.147503}},
+          {title: 'The May Fair Hotel - Patrick&#8217s Hotel', location: {lat: 51.508117,lng: -0.14395}},
+          {title: 'The London Edition Hotel', location: {lat: 51.516738,lng: -0.136241}},
+          {title: 'Westminster Abbey', location: {lat: 51.499417, lng: -0.127571}},
+          {title: 'Big Ben', location: {lat: 51.500729, lng: -0.124625}},
+          {title: '<a href="https://www.londoneye.com/">London Eye</a>', location: {lat: 51.503324, lng: -0.119543}},
+          {title: '<a href="http://www.britishmuseum.org/">British Museum</a>', location: {lat: 51.51931, lng: -0.126711}}
+        ];
+
+        var largeInfowindow = new google.maps.InfoWindow();
+
+        // Style the markers a bit. This will be our listing marker icon.
+        var defaultIcon = makeMarkerIcon('0091ff');
+
+        // Create a "highlighted location" marker color for when the user
+        // mouses over the marker.
+        var highlightedIcon = makeMarkerIcon('FFFF24');
+
+        var largeInfowindow = new google.maps.InfoWindow();
+        // The following group uses the location array to create an array of markers on initialize.
+        for (var i = 0; i < locations.length; i++) {
+          // Get the position from the location array.
+          var position = locations[i].location;
+          var title = locations[i].title;
+          // Create a marker per location, and put into markers array.
+          var marker = new google.maps.Marker({
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            icon: defaultIcon,
+            id: i
+          });
+          // Push the marker to our array of markers.
+          markers.push(marker);
+          // Create an onclick event to open the large infowindow at each marker.
+          marker.addListener('click', function() {
+            populateInfoWindow(this, largeInfowindow);
+          });
+          // Two event listeners - one for mouseover, one for mouseout,
+          // to change the colors back and forth.
+          marker.addListener('mouseover', function() {
+            this.setIcon(highlightedIcon);
+          });
+          marker.addListener('mouseout', function() {
+            this.setIcon(defaultIcon);
+          });
+        }
+
+        document.getElementById('show-places').addEventListener('click', showListings);
+        document.getElementById('hide-places').addEventListener('click', hideListings);
+      }
+
+      // This function populates the infowindow when the marker is clicked. We'll only allow
+      // one infowindow which will open at the marker that is clicked, and populate based
+      // on that markers position.
+      function populateInfoWindow(marker, infowindow) {
+        // Check to make sure the infowindow is not already opened on this marker.
+        if (infowindow.marker != marker) {
+          // Clear the infowindow content to give the streetview time to load.
+          infowindow.setContent('');
+          infowindow.marker = marker;
+          // Make sure the marker property is cleared if the infowindow is closed.
+          infowindow.addListener('closeclick', function() {
+            infowindow.marker = null;
+          });
+          var streetViewService = new google.maps.StreetViewService();
+          var radius = 100;
+          // In case the status is OK, which means the pano was found, compute the
+          // position of the streetview image, then calculate the heading, then get a
+          // panorama from that and set the options
+          function getStreetView(data, status) {
+            if (status == google.maps.StreetViewStatus.OK) {
+              var nearStreetViewLocation = data.location.latLng;
+              var heading = google.maps.geometry.spherical.computeHeading(
+                nearStreetViewLocation, marker.position);
+                infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+                var panoramaOptions = {
+                  position: nearStreetViewLocation,
+                  pov: {
+                    heading: heading,
+                    pitch: 30
+                  }
+                };
+              var panorama = new google.maps.StreetViewPanorama(
+                document.getElementById('pano'), panoramaOptions);
+            } else {
+              infowindow.setContent('<div>' + marker.title + '</div>' +
+                '<div>No Street View Found</div>');
+            }
+          }
+          // Use streetview service to get the closest streetview image within
+          // 50 meters of the markers position
+          streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+          // Open the infowindow on the correct marker.
+          infowindow.open(map, marker);
+        }
+      }
+
+      // This function will loop through the markers array and display them all.
+      function showListings() {
+        var bounds = new google.maps.LatLngBounds();
+        // Extend the boundaries of the map for each marker and display the marker
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+          bounds.extend(markers[i].position);
+        }
+        map.fitBounds(bounds);
+      }
+
+      // This function will loop through the listings and hide them all.
+      function hideListings() {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
+        }
+      }
+
+      // This function takes in a COLOR, and then creates a new marker
+      // icon of that color. The icon will be 21 px wide by 34 high, have an origin
+      // of 0, 0 and be anchored at 10, 34).
+      function makeMarkerIcon(markerColor) {
+        var markerImage = new google.maps.MarkerImage(
+          'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+          '|40|_|%E2%80%A2',
+          new google.maps.Size(21, 34),
+          new google.maps.Point(0, 0),
+          new google.maps.Point(10, 34),
+          new google.maps.Size(21,34));
+        return markerImage;
+      }
+
+    </script>
+
+    <script async defer
+        src=
+        "https://maps.googleapis.com/maps/api/js?key=AIzaSyAMpS4KKpIpI0cMJXNNGwfHrrkcr5gMMQk&libraries=geometry&v=3&callback=initMap">
+    </script>
+
+  </body>
+</html>
